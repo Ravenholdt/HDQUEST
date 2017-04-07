@@ -12,7 +12,7 @@ except socket.error, msg:
  
 print 'Socket Created'
  
-host = 'ravenholdt.se'
+host = 'localhost'
 port =  8888
  
 try:
