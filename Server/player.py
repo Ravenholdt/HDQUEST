@@ -1,6 +1,9 @@
 class Player(object):
     name = ""
     socket = 0
+    login = False
+    exit = False
+    menu = True
 
 
     # The class "constructor" - It's actually an initializer 

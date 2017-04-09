@@ -5,6 +5,7 @@ import sys      # System errors
 from thread import *    # Multithreading
 
 from player import *    # Player manager
+from menu import *      # Menu manager
  
 HOST = ''   # Symbolic name meaning all available interfaces
 PORT = 8888 # Arbitrary non-privileged port
@@ -29,39 +30,54 @@ print 'Socket now listening'
 def clientthread(conn, addr):
 
     #Adding to user list and creating player-object.
-    player = new_player(conn, str(addr[1]))
+    player = new_player(conn, 'Guest'+str(addr[1]))
+
+    while not player.login:
+        menuMain(player)
 
     player_list.append(player)
 
-    player.socket.send('Connected as ' + player.name + '.\n')
-
     #Sending message to connected client
+    reply = player.name + ' has logged in.'
+    for users in player_list:
+        users.socket.sendall(reply)
     player.socket.send('Welcome to the server. Type something and hit enter\n') #send only takes string
-    
-    player_conneted = True
 
     #infinite loop so that function do not terminate and thread do not end.
-    while player_conneted:
-         
-        #Receiving from client
-        data = player.socket.recv(1024).strip()
-        reply = 'OK...' + data + '\n'
+    while not player.exit:
 
-        print data == 'data'
-        print data + 'data'
+        reply = ''
+        data = ''
 
-        if not data: 
-            print 'No data.\n'
+        # Open menu
+        if player.menu:
+            menuMain(player)
 
-        if data == 'exit':
-            player_conneted = False
-            print data
-        else:
+        # Don't ask the user to type if it's exiting the server.
+        if not player.exit:
+            #Receiving from client
+            data = player.socket.recv(1024).strip()
+            reply = player.name + ': ' + data + '\n'
+
+        # Don't perform any operations if we don't get any input from user.
+        if not data:
+            break
+
+        # The input from user that will open the menu.
+        if data == 'menu':
+            player.menu = True
+            reply = ''
+        
+        # Reply to all connected users.
+        if reply:
             for users in player_list:
                 users.socket.sendall(reply)
-            player.socket.sendall(reply)
-     
+        
+
     #came out of loop
+    for users in player_list:
+        users.socket.sendall(player.name + ' has disconnected.\n')
+
     player.socket.close()
     player_list.remove(player)
     #player.close()
