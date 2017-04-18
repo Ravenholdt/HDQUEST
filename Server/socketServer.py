@@ -4,8 +4,8 @@ import socket   # Networking sockets
 import sys      # System errors
 from thread import *    # Multithreading
 
-from player import *    # Player manager
-from menu import *      # Menu manager
+import player   # Player manager
+import menu     # Menu manager
  
 HOST = ''   # Symbolic name meaning all available interfaces
 PORT = 8888 # Arbitrary non-privileged port

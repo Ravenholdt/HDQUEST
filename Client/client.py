@@ -32,7 +32,7 @@ s.connect((remote_ip , port))
 print 'Socket Connected to ' + host + ' on ip ' + remote_ip
 
 #Send some data to remote server
-message = "GET / HTTP/1.1\r\n\r\n"
+message = "Test"
  
 try :
     #Set the whole string
